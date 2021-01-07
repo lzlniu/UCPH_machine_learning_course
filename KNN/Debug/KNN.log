@@ -1,2 +1,3 @@
 ﻿  源.cpp
+F:\Develop\lzlniu_github\UCPH_machine_learning_course\KNN\源.cpp(135,13): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
   KNN.vcxproj -> F:\Develop\lzlniu_github\UCPH_machine_learning_course\KNN\Debug\KNN.exe
