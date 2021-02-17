@@ -69,10 +69,10 @@ ClsLinkList read(char file_name[], float X1, float X2, LinkList L) {
 			++L->dist; //输入元素计数储存到头结点dist中
 		}
 		L->cls = CL->cls; //元素种数参数传递到链表L
-		printf("Class number: %d", L->cls);
 	}
 	return CL;
 }
+
 void printlist(LinkList L) {
 	Node* p = L->next;
 	printf_s("\nx1\tx2\tclass\tdistance\n");
@@ -80,38 +80,24 @@ void printlist(LinkList L) {
 		printf("%.2f\t%.2f\t%d\t%.2f\n",p->x1,p->x2,p->cls,p->dist);
 		p = p->next;
 	}
+	printf("number of elements: %.0f\nnumber of classes: %d\n", L->dist, L->cls);
 	return;
 } //显示链表全部元素
+
 void sort(ClsLinkList CL) {
-	if (CL == nullptr || CL->next == nullptr) { //链表为空或仅头结点
-		printf("needn't order.\n");
-		return;
-	}
+	if (CL == nullptr || CL->next == nullptr) return; //链表为空或仅头结点，无需排序
 	Cls* p, * pb, temp;
-	/*
 	p = CL->next;
-	while (p != nullptr) {
-		q = p;
-		if (p->stat > CL->next->stat) {
-			temp = CL->next;
-			temp->next = p->next;
-			CL->next = p;
-			p->next = temp;
-		}
-		p = q->next;
-	}
-	*/
-	p = CL->next;
-	while (p->next != nullptr) {//以pf指向的节点为基准节点
-		pb = p->next;//pb从基准点的下一个节点开始
-		while (pb != nullptr) {
-			if (pb->stat > p->stat) {
-				temp = *p;
-				*p = *pb;
-				*pb = temp;
+	while (p->next != nullptr) { //遍历
+		pb = p->next;//pb为p的下一个结点
+		while (pb != nullptr) { //第二层遍历
+			if (pb->stat > p->stat) { //下一位比这一位大
+				temp = *p; //加星号的是指针，将临时结构temp对应p
+				*p = *pb; //p对应其下一位
+				*pb = temp; //下一位对应临时结构temp（即一开始的p），这三步调换了p和pb
 				temp.next = p->next;
 				p->next = pb->next;
-				pb->next = temp.next;
+				pb->next = temp.next; //这三步调换p和pb指针指向
 			}
 			pb = pb->next;
 		}
@@ -119,15 +105,17 @@ void sort(ClsLinkList CL) {
 	}
 	return;
 } //排序
+
 void printCls(ClsLinkList CL) {
 	Cls* p = CL->next;
-	printf_s("\nclass\tnumber\n");
+	printf_s("\nclass\tamount\n");
 	while (p != nullptr) {
 		printf("%d\t%d\n", p->cls, p->stat);
 		p = p->next;
 	}
 	return;
 } //显示链表全部元素
+
 void count(int K, LinkList L,ClsLinkList CL) {
 	Node* p = L->next;
 	Cls* c;
@@ -141,17 +129,17 @@ void count(int K, LinkList L,ClsLinkList CL) {
 		}
 		p = p->next;
 	}
-	sort(CL);
-	printCls(CL);
+	sort(CL); //将CL中元素按照每个类别数量统计值（stat）排序
 	if (CL->next != nullptr) {
 		if (CL->next->next != nullptr) {
-			if (CL->next->stat > CL->next->next->stat) printf("hypo is state %d\n", CL->next->cls);
-			else printf("confused!\n");
-		}
-		else printf("hypo is state %d\n", CL->next->cls);
+			if (CL->next->stat > CL->next->next->stat) printf("new element predictive class: %d\n", CL->next->cls);
+			else printf("new element state is not clear due to equal number of two classes.\n");
+		} //如果有两种或更多分类，则需要比较第一多的类和第二多的类是否相等，相等则无法预测
+		else printf("new element predictive class: %d\n", CL->next->cls); //只有一种分类
 	}
 	return;
 }
+
 int main() {
 	LinkList LL = Init();
 	char file_name[FILENAMEMAX]= "input.txt";
@@ -168,5 +156,6 @@ int main() {
 	ClsLinkList CC = read(file_name, x1, x2, LL);
 	printlist(LL);
 	count(k, LL, CC);
+	printCls(CC);
 	return 0;
 }
